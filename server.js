@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/UserRoutes");
+const path = require("path");
 
 const app = express();
 app.use(cors());
@@ -20,10 +21,11 @@ db.on("error", err => {
   console.error("Database connection error:", err);
 });
 
-// Use the userRoutes in your application
-app.use("/api/users", userRoutes);
+// Serve static files from the 'uploads' folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const port = 5000;
+
+const port = 8000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

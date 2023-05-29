@@ -1,12 +1,34 @@
 const User = require("../models/User");
 
-// Define your controller functions here, e.g., registerUser, loginUser, etc.
-// Example:
-const registerUser = (req, res) => {
-  // Implementation for registering a user
+const registerUser = async (req, res) => {
+  const { firstName, lastName, email, password, city, state } = req.body;
+  const pictureLocation = req.file ? req.file.filename : null; // Get the uploaded file's filename
+
+  try {
+    // Create a new user instance
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password,
+      city,
+      state,
+      photoLocation: pictureLocation
+    });
+
+    // Save the user to the database
+    await newUser.save();
+
+    res.status(200).json({ message: "Registration successful" });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
+
+// Other controller functions...
 
 module.exports = {
   registerUser
-  // Export other controller functions as needed
+  // Other exported functions...
 };

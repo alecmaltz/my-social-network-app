@@ -22,28 +22,26 @@ const App = () => {
     // Handle bio submission, e.g., send to backend API
   };
 
-  return (
-    <Router>
-      <div>
-        <h1>Frankenstein's Monster</h1>
-        <Routes>
-          <Route
-            path="/"
-            element={<PictureComponent imageUrl={pictureUrl} />}
-          />
-          <Route
-            path="/albums"
-            element={<div>Render your albums component</div>}
-          />
-          <Route path="/register" element={<RegistrationForm />} />
-        </Routes>
-        <InformationComponent city={city} numFriends={numFriends} />
-        <FriendsListComponent friends={friends} />
-        <TextAreaComponent onBioSubmit={handleBioSubmit} />
-        <WallComponent />
+  return <Router>
+      <div className="app-container">
+        <div className="left-column">
+          <h1>Frankenstein's Monster</h1>
+          <Routes>
+            <Route path="/" element={<PictureComponent imageUrl={pictureUrl} />} />
+            <Route path="/albums" element={<div>
+                  Render your albums component
+                </div>} />
+            <Route path="/register" element={<RegistrationForm />} />
+          </Routes>
+          <FriendsListComponent friends={friends} />
+          <InformationComponent city={city} numFriends={numFriends} />
+        </div>
+        <div className="right-column">
+          <TextAreaComponent onBioSubmit={handleBioSubmit} />
+          <WallComponent />
+        </div>
       </div>
-    </Router>
-  );
+    </Router>;
 };
 
 export default App;
