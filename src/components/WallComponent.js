@@ -16,22 +16,18 @@ const WallComponent = () => {
     setThought("");
   };
 
-  return (
-    <div>
+  return <div className="components">
       <h2>Wall</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" value={thought} onChange={handleThoughtChange} />
         <button type="submit">Post</button>
       </form>
       <ul>
-        {replies.map((reply, index) =>
-          <li key={index}>
+        {replies.map((reply, index) => <li key={index}>
             {reply}
-          </li>
-        )}
+          </li>)}
       </ul>
-    </div>
-  );
+    </div>;
 };
 
 export default WallComponent;

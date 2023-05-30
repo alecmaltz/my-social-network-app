@@ -20,17 +20,16 @@ const storage = multer.diskStorage({
 // Create the multer upload instance
 const upload = multer({ storage });
 
-// Handle user registration with file upload
-router.post("/register", upload.single("picture"), (req, res) => {
-  const { firstName, lastName, email, password, city, state } = req.body;
-  const pictureLocation = req.file ? req.file.filename : null; // Get the uploaded file's filename
+// Define the registration route
+router.post("/register", upload.single("picture"), UserController.registerUser);
 
-  // Save the user and pictureLocation to the database
-  // ...
+// Define the route for getting a user by ID
+router.get("/:id", UserController.getUserById);
 
-  res.status(200).json({ message: "Registration successful" });
-});
+// Define the route for updating a user
+router.put("/:id", UserController.updateUser);
 
-// Other routes and handlers...
+// Define the route for deleting a user
+router.delete("/:id", UserController.deleteUser);
 
 module.exports = router;

@@ -12,15 +12,13 @@ const TextAreaComponent = ({ onBioSubmit }) => {
     onBioSubmit(bio);
     };
 
-    return (
-    <div>
+    return <div className="components">
         <h2>Bio</h2>
         <form onSubmit={handleSubmit}>
-        <textarea value={bio} onChange={handleBioChange} />
-        <button type="submit">Submit</button>
+          <textarea value={bio} onChange={handleBioChange} />
+          <button type="submit">Submit</button>
         </form>
-    </div>
-    );
+      </div>;
 };
 
 export default TextAreaComponent;

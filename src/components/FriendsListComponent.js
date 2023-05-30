@@ -2,7 +2,7 @@ import React from "react";
 
 const FriendsListComponent = ({ friends }) => {
     return (
-    <div>
+    <div className="components">
         <h2>Friends List</h2>
         {friends.map(friend =>
         <div key={friend.id}>

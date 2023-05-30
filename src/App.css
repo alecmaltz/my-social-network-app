@@ -1,5 +1,11 @@
+* {
+  /* border: 1px solid red; */
+}
+
 .App {
   text-align: center;
+  background-color: #282c34;
+
 }
 
 .App-logo {
@@ -40,13 +46,32 @@
 
 .app-container {
   display: flex;
+  background-color: #282c34;
 }
 
 .left-column {
   flex: 1;
   padding-right: 20px;
+  padding-left: 20px;
 }
 
 .right-column {
   flex: 2;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.components {
+  border: 5px solid black;
+
+   border-radius: 25px;
+   box-shadow: blue 2px 2px;
+   padding: 10px;
+   color: antiquewhite;
+   margins: 20px;
 }
