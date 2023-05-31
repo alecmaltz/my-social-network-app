@@ -6,6 +6,8 @@ const userRouter = require("./routes/userRouter");
 const path = require("path");
 const UserController = require("./controllers/UserController");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 

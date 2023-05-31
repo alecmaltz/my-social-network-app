@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const UserController = require("../controllers/UserController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -20,8 +21,17 @@ const storage = multer.diskStorage({
 // Create the multer upload instance
 const upload = multer({ storage });
 
-// Define the registration route
+// Define the registration route (excluded from authentication)
 router.post("/register", upload.single("picture"), UserController.registerUser);
+
+// Apply authentication middleware to all remaining routes
+router.use(authMiddleware.authenticateToken);
+
+// Define the login route (excluded from authentication)
+router.post("/login", UserController.loginUser);
+
+// Define the check-login route (requires authentication)
+router.get("/check-login", authMiddleware.authenticateToken, UserController.checkLogin);
 
 // Define the route for getting a user by ID
 router.get("/:id", UserController.getUserById);

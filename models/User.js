@@ -35,8 +35,14 @@ const userSchema = new Schema({
     {
         type: Schema.Types.ObjectId,
         ref: "User"
+        },
+    ],
+    headline: {
+        type: String,
+    },
+    bio: {
+        type: String,
     }
-    ]
 });
 
 // Hash the password before saving
@@ -56,13 +62,21 @@ userSchema.pre("save", async function(next) {
     }
 });
 
-// Method to compare passwords
-userSchema.methods.comparePassword = async function(password) {
-    try {
-    return await bcrypt.compare(password, this.password);
-    } catch (error) {
-    throw new Error(error);
+userSchema.statics.findByCredentials = async function(email, password) {
+    const user = await this.findOne({ email });
+
+    if (!user) {
+    throw new Error("Invalid credentials");
     }
+
+  // Compare the provided password with the stored password
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordMatch) {
+    throw new Error("Invalid credentials");
+    }
+
+    return user;
 };
 
 const User = mongoose.model("User", userSchema);

@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
 import { BrowserRouter as Router, Route, Routes, useParams } from "react-router-dom";
 import axios from "axios";
 import PictureComponent from "./components/PictureComponent";
 import FriendsListComponent from "./components/FriendsListComponent";
 import InformationComponent from "./components/InformationComponent";
-import TextAreaComponent from "./components/TextAreaComponent";
+import BioComponent from "./components/BioComponent";
 import WallComponent from "./components/WallComponent";
 import RegistrationForm from "./components/RegistrationForm";
+import LoginForm from "./components/LoginForm";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  const { userID } = useParams(); // Access the userID from the URL parameter
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { id } = useParams(); // Access the userID from the URL parameter
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`/api/users/${userID}`);
+        const response = await axios.get(`/api/users/${id}`);
         const userData = response.data;
         setUser(userData);
       } catch (error) {
@@ -25,9 +26,28 @@ const App = () => {
     };
 
     fetchUser();
-  }, [userID]);
+  }, [id]);
 
-  const handleBioSubmit = bio => {
+  useEffect(() => {
+    // Check if the user is logged in by verifying the presence of a JWT
+    const checkLoginStatus = async () => {
+      try {
+        const response = await axios.get("/api/users/check-login", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Attach the JWT in the request headers
+          },
+        });
+
+        setIsLoggedIn(true); // Set the isLoggedIn state to true if the user is logged in
+      } catch (error) {
+        setIsLoggedIn(false); // Set the isLoggedIn state to false if the user is not logged in
+      }
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  const handleBioSubmit = (bio) => {
     // Handle bio submission, e.g., send to backend API
   };
 
@@ -42,7 +62,7 @@ const App = () => {
                 <Route
                   path="/"
                   element={
-                    <PictureComponent imageUrl={`/api/users/${userID}/picture`} />
+                    <PictureComponent imageUrl={`/api/users/${id}/picture`} />
                   }
                 />
                 <Route
@@ -53,7 +73,12 @@ const App = () => {
                     </div>
                   }
                 />
-                <Route path="/api/users/register" element={<RegistrationForm />} />
+                {!isLoggedIn && (
+                  <Route
+                    path="/register"
+                    element={<RegistrationForm />}
+                  />
+                )}
               </Routes>
               <InformationComponent
                 city={user.city}
@@ -66,8 +91,18 @@ const App = () => {
           )}
         </div>
         <div className="right-column">
-          <TextAreaComponent onBioSubmit={handleBioSubmit} />
-          <WallComponent />
+          {isLoggedIn ? (
+            <>
+              <BioComponent
+                bio={user?.bio}
+                headline={user?.headline}
+                onBioSubmit={handleBioSubmit}
+              />
+              <WallComponent />
+            </>
+          ) : (
+            <LoginForm />
+          )}
         </div>
       </div>
     </Router>
