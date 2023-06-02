@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import axiosInstance from "../components/axiosInstance";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+  const [token, setToken] = useState(null);
 
   const handleEmailChange = event => {
     setEmail(event.target.value);
@@ -18,23 +21,24 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const response = await axiosInstance.post("/api/users/login", {
+      const response = await axios.post("/api/users/login", {
         email,
         password
       });
 
-      const { token } = response.data; // Extract the JWT token from the response
+      const { token } = response.data;
+      setToken(token);
 
       // Store the token in the browser's local storage
       localStorage.setItem("token", token);
+      console.log("Token:", token);
 
-      console.log(response.data); // Handle success response
+      navigate("/dashboard"); // Redirect to the dashboard page after successful login
     } catch (error) {
-      console.error(error); // Handle error response
+      console.error("Login error:", error);
       setErrorMessage("Login failed. Please check your credentials.");
     }
   };
-
 
   return (
     <div>
@@ -42,7 +46,12 @@ const LoginForm = () => {
       <form onSubmit={handleLogin}>
         <div>
           <label>Email:</label>
-          <input type="email" value={email} onChange={handleEmailChange} />
+          <input
+            type="email"
+            value={email}
+            onChange={handleEmailChange}
+            name="email"
+          />
         </div>
         <div>
           <label>Password:</label>
@@ -50,6 +59,7 @@ const LoginForm = () => {
             type="password"
             value={password}
             onChange={handlePasswordChange}
+            name="password"
           />
         </div>
         <button type="submit">Login</button>

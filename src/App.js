@@ -8,25 +8,37 @@ import BioComponent from "./components/BioComponent";
 import WallComponent from "./components/WallComponent";
 import RegistrationForm from "./components/RegistrationForm";
 import LoginForm from "./components/LoginForm";
+import Dashboard from "./components/Dashboard";
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { id } = useParams(); // Access the userID from the URL parameter
+  
+  // const [token, setToken] = useState(null);
+  
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(`/api/users/${id}`);
-        const userData = response.data;
-        setUser(userData);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
+  useEffect(
+    () => {
+      const fetchUser = async () => {
+        try {
+          const response = await axios.get(`/api/users/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+          });
+          const userData = response.data;
+          setUser(userData);
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        }
+      };
 
-    fetchUser();
-  }, [id]);
+      fetchUser();
+    },
+    [id]
+  );
+
 
   useEffect(() => {
     // Check if the user is logged in by verifying the presence of a JWT
@@ -34,11 +46,13 @@ const App = () => {
       try {
         const response = await axios.get("/api/users/check-login", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Attach the JWT in the request headers
-          },
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
         });
 
         setIsLoggedIn(true); // Set the isLoggedIn state to true if the user is logged in
+        const userData = response.data;
+        setUser(userData); // Set the user data in the state
       } catch (error) {
         setIsLoggedIn(false); // Set the isLoggedIn state to false if the user is not logged in
       }
@@ -47,63 +61,15 @@ const App = () => {
     checkLoginStatus();
   }, []);
 
-  const handleBioSubmit = (bio) => {
-    // Handle bio submission, e.g., send to backend API
-  };
-
   return (
     <Router>
       <div className="app-container">
-        <div className="left-column">
-          {user && (
-            <>
-              <h1>{`${user.firstName} ${user.lastName}`}</h1>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <PictureComponent imageUrl={`/api/users/${id}/picture`} />
-                  }
-                />
-                <Route
-                  path="/albums"
-                  element={
-                    <div>
-                      {/* Render your albums component */}
-                    </div>
-                  }
-                />
-                {!isLoggedIn && (
-                  <Route
-                    path="/register"
-                    element={<RegistrationForm />}
-                  />
-                )}
-              </Routes>
-              <InformationComponent
-                city={user.city}
-                numFriends={user.numFriends}
-                firstName={user.firstName}
-                lastName={user.lastName}
-              />
-              <FriendsListComponent friends={user.friends} />
-            </>
-          )}
-        </div>
-        <div className="right-column">
-          {isLoggedIn ? (
-            <>
-              <BioComponent
-                bio={user?.bio}
-                headline={user?.headline}
-                onBioSubmit={handleBioSubmit}
-              />
-              <WallComponent />
-            </>
-          ) : (
-            <LoginForm />
-          )}
-        </div>
+        <Routes>
+          <Route
+            path="/"
+            element={isLoggedIn ? <Dashboard user={user} /> : <LoginForm />}
+          />
+        </Routes>
       </div>
     </Router>
   );
